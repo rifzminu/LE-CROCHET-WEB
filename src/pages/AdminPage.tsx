@@ -148,7 +148,7 @@ export const AdminPage: React.FC = () => {
     const success = loginAdmin(passwordInput);
     if (!success) {
       setLoginError(
-        `Incorrect passcode. Please check your password, or click 'Change Admin Password' below to set a new one.`
+        `Incorrect passcode. Please check your password, or click 'Change Password' below to reset it.`
       );
     } else {
       setLoginError('');
@@ -158,9 +158,9 @@ export const AdminPage: React.FC = () => {
 
   const handleResetPasswordToDefault = () => {
     updateSettings({ adminPassword: 'Minnu@098' });
-    setPasswordInput('Minnu@098');
+    setPasswordInput('');
     setLoginError('');
-    showNotification('Password set to: Minnu@098');
+    showNotification('Admin password reset to default successfully');
   };
 
   const handleSaveDirectNewPassword = (e: React.FormEvent) => {
@@ -171,13 +171,11 @@ export const AdminPage: React.FC = () => {
     setDirectNewPassword('');
     setShowDirectSetPassword(false);
     loginAdmin(clean);
-    showNotification(`Admin password changed and logged in!`);
+    showNotification(`Admin password updated and logged in!`);
   };
 
   // If not logged in, show Login Screen
   if (!isAdminLoggedIn) {
-    const activePass = settings.adminPassword || 'Minnu@098';
-
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-[#F8F3EA]">
         <div className="max-w-md w-full bg-[#E8DCCB] rounded-3xl border border-[#C7A98A] p-7 sm:p-9 space-y-6 shadow-xl">
@@ -216,11 +214,11 @@ export const AdminPage: React.FC = () => {
                 Enter your desired custom password below. It will be saved immediately:
               </p>
               <input
-                type="text"
+                type="password"
                 required
                 value={directNewPassword}
                 onChange={(e) => setDirectNewPassword(e.target.value)}
-                placeholder="e.g. Minnu@098 or your custom password"
+                placeholder="Enter new admin password"
                 className="w-full bg-white border border-[#C7A98A] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-[#3B2920] focus:outline-none focus:border-[#5A3E2B]"
               />
               <button
@@ -248,32 +246,16 @@ export const AdminPage: React.FC = () => {
                     required
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
-                    placeholder={`Enter password (e.g. ${activePass})`}
+                    placeholder="Enter admin password"
                     className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl pl-4 pr-11 py-3 text-sm text-[#3B2920] focus:outline-none focus:border-[#5A3E2B]"
                   />
                   <button
                     type="button"
                     onClick={() => setShowLoginPassword(!showLoginPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A3E2B]/70 hover:text-[#3B2920] p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A3E2B]/70 hover:text-[#3B2920] p-1 cursor-pointer"
                     aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
                   >
                     {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between mt-2.5 gap-2 text-[11px] text-[#5A3E2B]/85">
-                  <div className="flex items-center gap-1.5">
-                    <span>Active:</span>
-                    <code className="font-bold text-[#3B2920] bg-[#F8F3EA] px-2 py-0.5 rounded border border-[#C7A98A]/60">
-                      {activePass}
-                    </code>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setPasswordInput(activePass)}
-                    className="text-[#5A3E2B] hover:text-[#3B2920] font-bold underline cursor-pointer bg-[#F8F3EA]/70 px-2 py-0.5 rounded"
-                  >
-                    Quick Fill Password
                   </button>
                 </div>
               </div>
@@ -290,7 +272,7 @@ export const AdminPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowDirectSetPassword(true)}
-                  className="hover:text-[#3B2920] underline font-semibold text-[11px] flex items-center gap-1"
+                  className="hover:text-[#3B2920] underline font-semibold text-[11px] flex items-center gap-1 cursor-pointer"
                 >
                   <Key className="w-3 h-3 text-[#A67C52]" />
                   <span>Change Password</span>
@@ -299,7 +281,7 @@ export const AdminPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => navigateTo('home')}
-                  className="inline-flex items-center gap-1 hover:text-[#3B2920] underline font-medium text-[11px]"
+                  className="inline-flex items-center gap-1 hover:text-[#3B2920] underline font-medium text-[11px] cursor-pointer"
                 >
                   <ArrowLeft className="w-3 h-3" />
                   <span>Customer Store</span>
@@ -1284,7 +1266,7 @@ export const AdminPage: React.FC = () => {
                         updateSettings({
                           adminPassword: newPass,
                         });
-                        showNotification(`Admin password updated to "${newPass}"!`);
+                        showNotification('Admin password updated successfully!');
                       }}
                       className="bg-[#5A3E2B] text-[#F8F3EA] px-4 py-2 rounded-xl text-xs font-semibold hover:bg-[#A67C52] transition-colors cursor-pointer"
                     >
@@ -1299,19 +1281,19 @@ export const AdminPage: React.FC = () => {
                           adminPassword: 'Minnu@098',
                         });
                         updateSettings({ adminPassword: 'Minnu@098' });
-                        showNotification('Password set to: Minnu@098');
+                        showNotification('Admin password reset to default successfully');
                       }}
                       className="bg-[#E8DCCB] text-[#3B2920] border border-[#C7A98A] px-3.5 py-2 rounded-xl text-xs font-medium hover:bg-[#C7A98A]/40 transition-colors cursor-pointer"
                     >
-                      Set to Minnu@098
+                      Reset to Default Passcode
                     </button>
                   </div>
 
                   <div className="p-3 bg-[#E8DCCB]/40 rounded-xl border border-[#C7A98A]/30 text-[11px] text-[#5A3E2B] leading-relaxed">
-                    <p className="font-semibold text-[#3B2920] mb-0.5">Quick Login Notes:</p>
+                    <p className="font-semibold text-[#3B2920] mb-0.5">Admin Security Notes:</p>
                     <ul className="list-disc pl-4 space-y-0.5">
-                      <li>You can log in anytime by clicking the <strong>Admin</strong> button in the website header or footer.</li>
-                      <li>Current password: <code className="bg-[#F8F3EA] px-1.5 py-0.5 rounded font-bold text-[#3B2920]">{settings.adminPassword || 'Minnu@098'}</code></li>
+                      <li>You can access the portal anytime by clicking the <strong>Admin</strong> button in the website header or footer.</li>
+                      <li>Keep your password private to protect your store catalog, orders, and customer details.</li>
                     </ul>
                   </div>
                 </div>

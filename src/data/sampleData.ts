@@ -451,32 +451,14 @@ export const INSTAGRAM_POSTS = [
   },
 ];
 
-export const TESTIMONIALS = [
-  {
-    id: 'rev-1',
-    name: 'Elena Rostova',
-    handle: '@elena_cozyhome',
-    text: 'I ordered the pastel tulip pot and it is genuinely the most beautiful thing sitting on my study desk. The craftsmanship is flawless, so soft and warm!',
-    rating: 5,
-    product: 'Pastel Tulip Blossom',
-  },
-  {
-    id: 'rev-2',
-    name: 'Rohan Sharma',
-    handle: '@rohan.reads',
-    text: 'Submitted a custom crochet request for my girlfriend’s cat. The seller was so kind on Instagram and the final amigurumi exceeded all expectations!',
-    rating: 5,
-    product: 'Custom Cat Plushie',
-  },
-  {
-    id: 'rev-3',
-    name: 'Grace Miller',
-    handle: '@grace.aesthetic',
-    text: 'The granny square tote bag is sturdy, lightweight and holds all my weekend market treats. Getting compliments constantly wherever I go.',
-    rating: 5,
-    product: 'Granny Square Market Tote',
-  }
-];
+export const TESTIMONIALS: Array<{
+  id: string;
+  name: string;
+  handle: string;
+  text: string;
+  rating: number;
+  product: string;
+}> = [];
 
 export const CUSTOMER_REVIEWS = TESTIMONIALS;
 

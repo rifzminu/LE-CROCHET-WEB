@@ -11,7 +11,7 @@ import {
   Palette,
   ArrowUpRight,
 } from 'lucide-react';
-import { INSTAGRAM_POSTS, CUSTOMER_REVIEWS } from '../data/sampleData';
+import { INSTAGRAM_POSTS } from '../data/sampleData';
 
 export const HomePage: React.FC = () => {
   const { products, categories, navigateTo, settings } = useStore();
@@ -276,42 +276,6 @@ export const HomePage: React.FC = () => {
             <Instagram className="w-4 h-4 text-[#A67C52]" />
             <span>Follow on Instagram</span>
           </a>
-        </div>
-      </section>
-
-      {/* 7. CUSTOMER REVIEWS */}
-      <section className="bg-[#E8DCCB]/25 border-t border-[#E8DCCB] py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-xl mx-auto mb-8">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#A67C52]">
-              Customer Love
-            </span>
-            <h2 className="font-serif-heading text-3xl font-bold text-[#3B2920]">
-              From our Instagram family
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {CUSTOMER_REVIEWS.map((review) => (
-              <div
-                key={review.id}
-                className="p-5 rounded-2xl bg-[#F8F3EA] border border-[#E8DCCB] space-y-3 shadow-xs"
-              >
-                <div className="flex items-center gap-1 text-[#A67C52]">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <span key={i} className="text-sm">★</span>
-                  ))}
-                </div>
-                <p className="text-xs sm:text-sm text-[#5A3E2B] italic leading-relaxed">
-                  "{review.text}"
-                </p>
-                <div className="pt-2 border-t border-[#E8DCCB]/60 flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#3B2920]">{review.name}</span>
-                  <span className="text-[#A67C52] text-[11px] font-medium">{review.product}</span>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
     </div>
