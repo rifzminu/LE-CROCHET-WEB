@@ -39,10 +39,18 @@ interface StoreContextType {
   cartSubtotal: number;
   deliveryFee: number;
   cartTotal: number;
+  wishlist: string[];
+  wishlistCount: number;
 
   // Navigation
   navigateTo: (page: string, params?: NavigationParams) => void;
   showNotification: (msg: string) => void;
+
+  // Wishlist actions
+  toggleWishlist: (productId: string) => void;
+  isInWishlist: (productId: string) => boolean;
+  clearWishlist: () => void;
+  moveWishlistToCart: () => void;
 
   // Cart actions
   addToCart: (product: Product, quantity?: number, selectedColor?: string) => void;
@@ -80,13 +88,46 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Products
   const [products, setProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem('crochet_products');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
+    if (saved) {
+      try {
+        const parsed: Product[] = JSON.parse(saved);
+        // If old sample products still had USD low numbers (e.g. 24 for tulip), map them to INR
+        if (parsed.length > 0 && parsed[0].id === 'prod-1' && parsed[0].price <= 50) {
+          return INITIAL_PRODUCTS;
+        }
+        // Ensure prod-9 (baby crochet set) exists in products list
+        if (!parsed.some((p) => p.id === 'prod-9')) {
+          const babyProd = INITIAL_PRODUCTS.find((p) => p.id === 'prod-9');
+          if (babyProd) {
+            return [...parsed, babyProd];
+          }
+        }
+        return parsed;
+      } catch (e) {
+        return INITIAL_PRODUCTS;
+      }
+    }
+    return INITIAL_PRODUCTS;
   });
 
   // Categories
   const [categories, setCategories] = useState<Category[]>(() => {
     const saved = localStorage.getItem('crochet_categories');
-    return saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
+    if (saved) {
+      try {
+        const parsed: Category[] = JSON.parse(saved);
+        if (!parsed.some((c) => c.id === 'cat-baby')) {
+          const babyCat = INITIAL_CATEGORIES.find((c) => c.id === 'cat-baby');
+          if (babyCat) {
+            return [babyCat, ...parsed];
+          }
+        }
+        return parsed;
+      } catch (e) {
+        return INITIAL_CATEGORIES;
+      }
+    }
+    return INITIAL_CATEGORIES;
   });
 
   // Cart
@@ -116,6 +157,37 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (!parsed.adminPassword || parsed.adminPassword === 'crochet123') {
           parsed.adminPassword = INITIAL_SETTINGS.adminPassword;
         }
+        if (
+          !parsed.storeName ||
+          parsed.storeName === 'MY CROCHET STORE' ||
+          parsed.storeName === 'LE_CROCHET'
+        ) {
+          parsed.storeName = 'LEH_CROCHET';
+        }
+        if (!parsed.currencySymbol || parsed.currencySymbol === '$') {
+          parsed.currencySymbol = '₹';
+        }
+        if (!parsed.deliveryFee || parsed.deliveryFee === 5) {
+          parsed.deliveryFee = 70;
+        }
+        if (!parsed.freeDeliveryThreshold || parsed.freeDeliveryThreshold === 50) {
+          parsed.freeDeliveryThreshold = 999;
+        }
+        if (
+          !parsed.tagline ||
+          parsed.tagline === 'Handmade with love • Little things, made beautifully'
+        ) {
+          parsed.tagline = INITIAL_SETTINGS.tagline;
+        }
+        if (
+          !parsed.instagramHandle ||
+          parsed.instagramHandle === 'mycrochetstore' ||
+          parsed.instagramHandle === 'le_crochet' ||
+          parsed.instagramHandle === 'le_crochet__'
+        ) {
+          parsed.instagramHandle = 'leh_crochet___';
+          parsed.instagramUrl = 'https://instagram.com/leh_crochet___';
+        }
         return { ...INITIAL_SETTINGS, ...parsed };
       } catch (e) {
         return INITIAL_SETTINGS;
@@ -136,6 +208,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return sessionStorage.getItem('crochet_admin_logged') === 'true';
   });
 
+  // Wishlist
+  const [wishlist, setWishlist] = useState<string[]>(() => {
+    const saved = localStorage.getItem('crochet_wishlist');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   // Sync to localStorage
   useEffect(() => {
     localStorage.setItem('crochet_products', JSON.stringify(products));
@@ -148,6 +226,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     localStorage.setItem('crochet_cart', JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem('crochet_wishlist', JSON.stringify(wishlist));
+  }, [wishlist]);
 
   useEffect(() => {
     localStorage.setItem('crochet_orders', JSON.stringify(orders));
@@ -195,6 +277,47 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       ? 0
       : settings.deliveryFee;
   const cartTotal = cartSubtotal + deliveryFee;
+
+  // Wishlist actions and calculations
+  const wishlistCount = wishlist.length;
+
+  const toggleWishlist = (productId: string) => {
+    setWishlist((prev) => {
+      const exists = prev.includes(productId);
+      const product = products.find((p) => p.id === productId);
+      const name = product ? product.name : 'Item';
+      if (exists) {
+        showNotification(`Removed "${name}" from wishlist`);
+        return prev.filter((id) => id !== productId);
+      } else {
+        showNotification(`Saved "${name}" to wishlist ♡`);
+        return [...prev, productId];
+      }
+    });
+  };
+
+  const isInWishlist = (productId: string) => wishlist.includes(productId);
+
+  const clearWishlist = () => {
+    setWishlist([]);
+    showNotification('Wishlist cleared');
+  };
+
+  const moveWishlistToCart = () => {
+    let addedCount = 0;
+    wishlist.forEach((id) => {
+      const product = products.find((p) => p.id === id);
+      if (product && !product.isSoldOut && product.availableQuantity > 0) {
+        addToCart(product, 1);
+        addedCount++;
+      }
+    });
+    if (addedCount > 0) {
+      showNotification(`Moved ${addedCount} available item${addedCount > 1 ? 's' : ''} to your cart!`);
+    } else {
+      showNotification('No in-stock items in wishlist to add');
+    }
+  };
 
   // Cart actions
   const addToCart = (product: Product, quantity = 1, selectedColor?: string) => {
@@ -447,6 +570,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         cartSubtotal,
         deliveryFee,
         cartTotal,
+        wishlist,
+        wishlistCount,
+        toggleWishlist,
+        isInWishlist,
+        clearWishlist,
+        moveWishlistToCart,
         navigateTo,
         showNotification,
         addToCart,

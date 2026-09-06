@@ -19,6 +19,8 @@ export const ProductDetailsPage: React.FC = () => {
     selectedProductId,
     navigateTo,
     addToCart,
+    toggleWishlist,
+    isInWishlist,
     settings,
     showNotification,
   } = useStore();
@@ -112,6 +114,26 @@ export const ProductDetailsPage: React.FC = () => {
               alt={product.name}
               className="w-full h-full object-cover object-center"
             />
+
+            {/* Wishlist Button on Image */}
+            <button
+              onClick={() => toggleWishlist(product.id)}
+              type="button"
+              className={`absolute top-4 right-4 z-10 p-2.5 rounded-full backdrop-blur-md transition-all duration-200 cursor-pointer shadow-md ${
+                isInWishlist(product.id)
+                  ? 'bg-[#F8F3EA] text-[#C2410C] scale-105 ring-2 ring-[#C2410C]/30'
+                  : 'bg-[#F8F3EA]/90 text-[#5A3E2B] hover:text-[#C2410C] hover:bg-[#F8F3EA] hover:scale-105'
+              }`}
+              title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Save to wishlist'}
+              aria-label={isInWishlist(product.id) ? 'Remove from wishlist' : 'Save to wishlist'}
+            >
+              <Heart
+                className={`w-5 h-5 transition-transform duration-200 ${
+                  isInWishlist(product.id) ? 'fill-[#C2410C] text-[#C2410C]' : ''
+                }`}
+              />
+            </button>
+
             {isSoldOut && (
               <div className="absolute top-4 left-4 bg-[#3B2920]/90 text-[#F8F3EA] text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
                 Sold Out
@@ -219,18 +241,38 @@ export const ProductDetailsPage: React.FC = () => {
 
             {/* Main Action Buttons */}
             <div className="space-y-2.5 pt-4">
-              <button
-                onClick={handleAddToCart}
-                disabled={isSoldOut}
-                className={`w-full py-3.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                  isSoldOut
-                    ? 'bg-[#E8DCCB] text-[#5A3E2B]/50 cursor-not-allowed'
-                    : 'bg-[#5A3E2B] hover:bg-[#A67C52] text-[#F8F3EA] shadow-md active:scale-98'
-                }`}
-              >
-                <ShoppingBag className="w-4 h-4" />
-                <span>{isSoldOut ? 'Sold Out' : 'Add to Cart'}</span>
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isSoldOut}
+                  className={`flex-1 py-3.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    isSoldOut
+                      ? 'bg-[#E8DCCB] text-[#5A3E2B]/50 cursor-not-allowed'
+                      : 'bg-[#5A3E2B] hover:bg-[#A67C52] text-[#F8F3EA] shadow-md active:scale-98'
+                  }`}
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  <span>{isSoldOut ? 'Sold Out' : 'Add to Cart'}</span>
+                </button>
+
+                <button
+                  onClick={() => toggleWishlist(product.id)}
+                  type="button"
+                  className={`p-3.5 rounded-full border transition-all cursor-pointer shadow-xs ${
+                    isInWishlist(product.id)
+                      ? 'bg-[#F8F3EA] border-[#C2410C] text-[#C2410C] ring-2 ring-[#C2410C]/25 shadow-sm'
+                      : 'bg-[#F8F3EA] border-[#C7A98A] text-[#5A3E2B] hover:text-[#C2410C] hover:border-[#C2410C]'
+                  }`}
+                  title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Save to wishlist'}
+                  aria-label={isInWishlist(product.id) ? 'Remove from wishlist' : 'Save to wishlist'}
+                >
+                  <Heart
+                    className={`w-5 h-5 transition-transform duration-200 ${
+                      isInWishlist(product.id) ? 'fill-[#C2410C] text-[#C2410C] scale-110' : ''
+                    }`}
+                  />
+                </button>
+              </div>
 
               {!isSoldOut && (
                 <button

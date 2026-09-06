@@ -1,25 +1,32 @@
 import { Product, Category, Order, CustomRequest, StoreSettings } from '../types';
 
 export const INITIAL_SETTINGS: StoreSettings = {
-  storeName: 'MY CROCHET STORE',
-  tagline: 'Handmade with love • Little things, made beautifully',
-  instagramHandle: 'mycrochetstore',
-  instagramUrl: 'https://instagram.com',
-  deliveryFee: 5,
-  freeDeliveryThreshold: 50,
-  contactEmail: 'hello@mycrochetstore.com',
-  contactPhone: '+1 (555) 234-5678',
-  currencySymbol: '$',
+  storeName: 'LEH_CROCHET',
+  tagline: 'Handmade with love • Baby crochet items, forever flowers & cute keepsakes',
+  instagramHandle: 'leh_crochet___',
+  instagramUrl: 'https://instagram.com/leh_crochet___',
+  deliveryFee: 70,
+  freeDeliveryThreshold: 999,
+  contactEmail: 'hello@lehcrochet.com',
+  contactPhone: '+91 98765 43210',
+  currencySymbol: '₹',
   adminName: 'Crochet Artisan & Owner',
   adminRole: 'Store Owner & Creator',
-  adminEmail: 'admin@crochetstore.com',
-  adminPhone: '+1 (555) 234-5678',
+  adminEmail: 'admin@lehcrochet.com',
+  adminPhone: '+91 98765 43210',
   adminPassword: 'Minnu@098',
-  paymentUpiId: 'crochet.store@upi',
+  paymentUpiId: 'lehcrochet@upi',
   paymentInstructions: 'Scan UPI QR or pay to UPI ID. DM payment screenshot on Instagram or WhatsApp.',
 };
 
 export const INITIAL_CATEGORIES: Category[] = [
+  {
+    id: 'cat-baby',
+    name: 'Baby Crochet',
+    slug: 'baby-crochet',
+    description: 'Ultra-gentle handcrafted booties, bunny rattles, bonnet caps, and heirloom baby gifts.',
+    image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80',
+  },
   {
     id: 'cat-flowers',
     name: 'Crochet Flowers',
@@ -82,7 +89,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-1',
     name: 'Pastel Tulip Blossom in Clay Pot',
-    price: 24,
+    price: 499,
     description: 'An everlasting handcrafted crochet tulip nestled in a miniature knitted terracotta pot. Handcrafted with ultra-soft 100% milk cotton yarn and detailed with a flexible stem.',
     category: 'Crochet Flowers',
     images: [
@@ -107,7 +114,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-2',
     name: 'Clover & Daisy Charm Keychain',
-    price: 12,
+    price: 249,
     description: 'A charming lucky 4-leaf clover and sweet daisy combo attached to a durable antique brass keyring. The perfect miniature companion for backpacks, totes, or car keys.',
     category: 'Keychains',
     images: [
@@ -130,7 +137,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-3',
     name: 'Vintage Granny Square Market Tote',
-    price: 48,
+    price: 899,
     description: 'Handcrafted bohemian aesthetic crochet tote bag pieced together from 18 traditional daisy granny squares. Features reinforced shoulder straps that do not sag.',
     category: 'Bags',
     images: [
@@ -153,7 +160,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-4',
     name: 'Sleepy Bunny Amigurumi Plushie',
-    price: 36,
+    price: 749,
     description: 'Our most beloved huggable bunny amigurumi with floppy ears and cozy knitted overalls. Each bunny takes over 6 hours of patient artisan hand-crocheting.',
     category: 'Plushies',
     images: [
@@ -176,7 +183,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-5',
     name: 'Strawberry & Avocado Fridge Magnet Duo',
-    price: 14,
+    price: 299,
     description: 'Set of two whimsical high-power neodymium magnet crochet miniatures: one juicy plump strawberry and one smiling ripe avocado half.',
     category: 'Magnets',
     images: [
@@ -199,7 +206,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-6',
     name: 'Ruffled Milk Cotton Hair Scrunchie',
-    price: 9,
+    price: 149,
     description: 'Cloud-soft voluminous crochet hair scrunchie that glides gently over your hair without tugging, snagging, or causing breakage.',
     category: 'Accessories',
     images: [
@@ -222,7 +229,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-7',
     name: 'Cozy Morning Ribbed Mug Hugger',
-    price: 15,
+    price: 199,
     description: 'Keep your tea or coffee pleasantly warm while protecting your hands with this snug textured cup sleeve with a wooden toggle button closure.',
     category: 'Accessories',
     images: [
@@ -246,7 +253,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-8',
     name: 'Eternal Sunflower & Baby Breath Gift Box',
-    price: 42,
+    price: 849,
     description: 'A radiant crochet sunflower accompanied by mini eucalyptus stems and baby breath sprigs, hand-wrapped in vintage kraft paper with a satin ribbon.',
     category: 'Gifts',
     images: [
@@ -265,6 +272,31 @@ export const INITIAL_PRODUCTS: Product[] = [
     isPopular: true,
     isNewArrival: true,
     createdAt: '2025-02-25T16:00:00Z',
+  },
+  {
+    id: 'prod-9',
+    name: 'Heirloom Baby Booties & Bunny Rattle Set',
+    price: 599,
+    description: 'Incredibly gentle newborn gift set featuring a pair of soft ribbed baby booties and a matching wooden-ring bunny crochet rattle. Handcrafted using certified hypoallergenic baby milk cotton yarn.',
+    category: 'Baby Crochet',
+    images: [
+      'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=900&q=80',
+      'https://images.unsplash.com/photo-1559715745-e1b123c5c407?auto=format&fit=crop&w=900&q=80',
+      'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=900&q=80'
+    ],
+    availableQuantity: 6,
+    colors: ['Oatmeal Cream', 'Baby Pink', 'Soft Sage', 'Sky Blue'],
+    details: [
+      '100% hypoallergenic organic baby milk cotton yarn',
+      'Natural smooth beechwood teething ring',
+      'Gentle chime bell inside the bunny head',
+      'Fits newborns 0-6 months comfortably'
+    ],
+    careInstructions: 'Hand wash gently in lukewarm water with mild baby detergent. Lay flat to dry naturally.',
+    isFeatured: true,
+    isPopular: true,
+    isNewArrival: true,
+    createdAt: '2025-03-01T10:00:00Z',
   }
 ];
 

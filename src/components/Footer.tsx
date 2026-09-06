@@ -100,6 +100,14 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <button
+                  onClick={() => navigateTo('wishlist')}
+                  className="hover:text-[#F8F3EA] transition-colors text-left"
+                >
+                  Saved Wishlist
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => navigateTo('cart')}
                   className="hover:text-[#F8F3EA] transition-colors text-left"
                 >

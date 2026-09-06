@@ -1,6 +1,6 @@
 {
-  "name": "MY CROCHET STORE",
-  "description": "Handmade crochet e-commerce boutique connected to Instagram with product browsing, orders, and custom crochet requests.",
+  "name": "LEH_CROCHET",
+  "description": "Handmade crochet boutique with baby crochet items, artisanal floral bouquets, plushies, bags, and custom orders.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

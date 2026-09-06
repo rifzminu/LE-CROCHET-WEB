@@ -79,7 +79,7 @@ export const AboutContactPage: React.FC<{ initialTab?: 'about' | 'contact' }> = 
                 What started as a small personal passion shared on Instagram has grown into an online handmade boutique. We believe in the warmth and charm of slow-made items that stand out from mass production.
               </p>
               <p>
-                Whether it's a bouquet of crochet tulips that will brighten someone's room for years without wilting, or a custom plushie made to resemble a beloved pet, each stitch is created with patience and dedication.
+                Whether it's gentle heirloom baby crochet booties & rattles for little ones, a bouquet of crochet tulips that will brighten someone's room for years, or a custom plushie made with care, each stitch is created with patience and dedication.
               </p>
               <div className="pt-2 flex items-center gap-3">
                 <a

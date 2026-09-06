@@ -17,6 +17,7 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
 import { AboutContactPage } from './pages/AboutContactPage';
 import { AdminPage } from './pages/AdminPage';
+import { WishlistPage } from './pages/WishlistPage';
 
 function StoreApp() {
   const { currentPage, navigateTo, selectedProductId, notification } = useStore();
@@ -53,6 +54,7 @@ function StoreApp() {
         {currentPage === 'product-detail' && <ProductDetailsPage />}
         {currentPage === 'categories' && <CategoriesPage />}
         {currentPage === 'custom-order' && <CustomOrderPage />}
+        {currentPage === 'wishlist' && <WishlistPage />}
         {currentPage === 'cart' && <CartPage />}
         {currentPage === 'checkout' && <CheckoutPage />}
         {currentPage === 'order-confirmation' && <OrderConfirmationPage />}

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
-import { ShoppingBag, Search, Menu, X, Instagram, Shield } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, Instagram, Shield, Heart } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const {
     currentPage,
     navigateTo,
     cartCount,
+    wishlistCount,
     settings,
   } = useStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -123,6 +124,25 @@ export const Header: React.FC = () => {
               <Instagram className="w-5 h-5" />
             </a>
 
+            {/* Wishlist Icon with badge */}
+            <button
+              onClick={() => handleNavClick('wishlist')}
+              className="relative p-2 text-[#5A3E2B] hover:text-[#A67C52] transition-colors rounded-full hover:bg-[#E8DCCB]/50"
+              aria-label={`Wishlist with ${wishlistCount} saved items`}
+              title="My Wishlist"
+            >
+              <Heart
+                className={`w-5 h-5 transition-transform ${
+                  wishlistCount > 0 ? 'fill-[#C2410C] text-[#C2410C]' : 'text-[#5A3E2B]'
+                }`}
+              />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#C2410C] text-[#F8F3EA] text-[11px] font-bold flex items-center justify-center shadow-sm">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+
             {/* Cart Icon with badge */}
             <button
               onClick={() => handleNavClick('cart')}
@@ -203,6 +223,30 @@ export const Header: React.FC = () => {
                 )}
               </button>
             ))}
+
+            {/* Wishlist Mobile Link */}
+            <button
+              onClick={() => handleNavClick('wishlist')}
+              className={`text-left text-base font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-between ${
+                currentPage === 'wishlist'
+                  ? 'bg-[#E8DCCB] text-[#3B2920] font-semibold'
+                  : 'text-[#5A3E2B] hover:bg-[#E8DCCB]/40'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <Heart
+                  className={`w-4 h-4 ${
+                    wishlistCount > 0 ? 'fill-[#C2410C] text-[#C2410C]' : 'text-[#5A3E2B]'
+                  }`}
+                />
+                <span>My Wishlist</span>
+              </span>
+              {wishlistCount > 0 && (
+                <span className="text-xs bg-[#C2410C] text-[#F8F3EA] px-2 py-0.5 rounded-full font-bold">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
           </nav>
 
           <div className="pt-4 border-t border-[#E8DCCB] flex items-center justify-between">

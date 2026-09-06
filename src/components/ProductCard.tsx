@@ -8,8 +8,9 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { navigateTo, addToCart, settings } = useStore();
+  const { navigateTo, addToCart, settings, toggleWishlist, isInWishlist } = useStore();
   const isSoldOut = product.isSoldOut || product.availableQuantity <= 0;
+  const isWishlisted = isInWishlist(product.id);
 
   const handleCardClick = () => {
     navigateTo('product-detail', { productId: product.id });
@@ -20,6 +21,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     if (!isSoldOut) {
       addToCart(product);
     }
+  };
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleWishlist(product.id);
   };
 
   const primaryImage =
@@ -40,6 +46,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
+
+        {/* Wishlist Heart Button */}
+        <button
+          onClick={handleWishlistClick}
+          type="button"
+          className={`absolute top-2.5 right-2.5 z-20 p-2 rounded-full backdrop-blur-md transition-all duration-200 cursor-pointer shadow-sm ${
+            isWishlisted
+              ? 'bg-[#F8F3EA] text-[#C2410C] scale-105 hover:scale-110 shadow-md ring-2 ring-[#C2410C]/30'
+              : 'bg-[#F8F3EA]/85 text-[#5A3E2B] hover:text-[#C2410C] hover:bg-[#F8F3EA] hover:scale-105'
+          }`}
+          title={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
+          aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+        >
+          <Heart
+            className={`w-4 h-4 transition-all duration-200 ${
+              isWishlisted ? 'fill-[#C2410C] text-[#C2410C]' : 'text-[#5A3E2B]'
+            }`}
+          />
+        </button>
 
         {/* Badges */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">

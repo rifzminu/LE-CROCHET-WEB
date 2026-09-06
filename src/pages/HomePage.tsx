@@ -38,7 +38,7 @@ export const HomePage: React.FC = () => {
               </h1>
 
               <p className="text-sm sm:text-base text-[#5A3E2B]/85 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                Thoughtfully handcrafted crochet pieces made specially for you. Everlasting flowers, cozy accessories, whimsical keychains, and custom creations.
+                Thoughtfully handcrafted crochet pieces made specially for you. Soft baby crochet items, everlasting flowers, cozy accessories, whimsical keychains, and custom creations.
               </p>
 
               <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4">
@@ -204,7 +204,7 @@ export const HomePage: React.FC = () => {
                 Have something special in mind?
               </h2>
               <p className="text-sm sm:text-base text-[#5A3E2B]/85 max-w-lg mx-auto lg:mx-0">
-                Tell us your idea and we'll turn it into a handmade crochet piece. Pick custom flower colors, bag dimensions, character keychains, or personalized gifts.
+                Tell us your idea and we'll turn it into a handmade crochet piece. Pick custom baby booties & rattles, flower bouquet colors, bag dimensions, character keychains, or personalized gifts.
               </p>
               <div className="pt-2">
                 <button

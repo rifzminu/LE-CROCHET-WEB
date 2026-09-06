@@ -203,7 +203,7 @@ export const CustomOrderPage: React.FC = () => {
             rows={5}
             value={requirements}
             onChange={(e) => setRequirements(e.target.value)}
-            placeholder="Describe your requirements — product type, colour, size, design, name/text, quantity, or anything else you'd like."
+            placeholder="Describe your requirements — product type (e.g. baby booties & rattle set, flower bouquet, amigurumi plushie, bag), colour, size, design, name/text, quantity, or anything else you'd like."
             className="w-full bg-[#F8F3EA] border border-[#E8DCCB] focus:border-[#A67C52] rounded-2xl p-4 text-xs sm:text-sm text-[#3B2920] focus:outline-none transition-colors leading-relaxed placeholder-[#5A3E2B]/50"
           />
         </div>

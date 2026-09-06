@@ -88,7 +88,7 @@ export const AdminPage: React.FC = () => {
     instagramUrl: settings.instagramUrl || '',
     deliveryFee: settings.deliveryFee.toString(),
     freeDeliveryThreshold: settings.freeDeliveryThreshold.toString(),
-    currencySymbol: settings.currencySymbol || '$',
+    currencySymbol: settings.currencySymbol || '₹',
   });
 
   // Keep form in sync with settings
@@ -98,7 +98,7 @@ export const AdminPage: React.FC = () => {
       adminRole: settings.adminRole || '',
       adminEmail: settings.adminEmail || settings.contactEmail || '',
       adminPhone: settings.adminPhone || settings.contactPhone || '',
-      adminPassword: settings.adminPassword || 'crochet123',
+      adminPassword: settings.adminPassword || 'Minnu@098',
       paymentUpiId: settings.paymentUpiId || '',
       paymentInstructions: settings.paymentInstructions || '',
       storeName: settings.storeName || '',
@@ -107,7 +107,7 @@ export const AdminPage: React.FC = () => {
       instagramUrl: settings.instagramUrl || '',
       deliveryFee: settings.deliveryFee.toString(),
       freeDeliveryThreshold: settings.freeDeliveryThreshold.toString(),
-      currencySymbol: settings.currencySymbol || '$',
+      currencySymbol: settings.currencySymbol || '₹',
     });
   }, [settings]);
 
@@ -1463,7 +1463,7 @@ export const AdminPage: React.FC = () => {
                             instagramHandle: adminSettingsForm.instagramHandle.replace(/^@/, ''),
                           })
                         }
-                        placeholder="mycrochetstore"
+                        placeholder="leh_crochet___"
                         className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3.5 py-2 text-xs sm:text-sm text-[#3B2920]"
                       />
                     </div>
@@ -1488,7 +1488,31 @@ export const AdminPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                    <div>
+                      <label className="block font-semibold text-[#3B2920] uppercase mb-1">
+                        Currency
+                      </label>
+                      <select
+                        value={adminSettingsForm.currencySymbol}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setAdminSettingsForm({
+                            ...adminSettingsForm,
+                            currencySymbol: val,
+                          });
+                          updateSettings({ currencySymbol: val });
+                        }}
+                        className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3.5 py-2 text-xs sm:text-sm text-[#3B2920]"
+                      >
+                        <option value="₹">₹ (INR - Indian Rupee)</option>
+                        <option value="$">$ (USD)</option>
+                        <option value="€">€ (EUR)</option>
+                        <option value="£">£ (GBP)</option>
+                        <option value="AED">AED</option>
+                      </select>
+                    </div>
+
                     <div>
                       <label className="block font-semibold text-[#3B2920] uppercase mb-1">
                         Delivery Fee ({adminSettingsForm.currencySymbol})
@@ -1551,16 +1575,16 @@ export const AdminPage: React.FC = () => {
                     adminRole: adminSettingsForm.adminRole.trim() || 'Artisan & Admin',
                     adminEmail: adminSettingsForm.adminEmail.trim() || settings.contactEmail,
                     adminPhone: adminSettingsForm.adminPhone.trim() || settings.contactPhone,
-                    adminPassword: adminSettingsForm.adminPassword.trim() || 'crochet123',
+                    adminPassword: adminSettingsForm.adminPassword.trim() || 'Minnu@098',
                     paymentUpiId: adminSettingsForm.paymentUpiId.trim(),
                     paymentInstructions: adminSettingsForm.paymentInstructions.trim(),
-                    storeName: adminSettingsForm.storeName.trim() || 'MY CROCHET STORE',
+                    storeName: adminSettingsForm.storeName.trim() || 'LEH_CROCHET',
                     tagline: adminSettingsForm.tagline.trim(),
                     instagramHandle: adminSettingsForm.instagramHandle.trim().replace(/^@/, ''),
                     instagramUrl: adminSettingsForm.instagramUrl.trim(),
                     deliveryFee: parseFloat(adminSettingsForm.deliveryFee) || 0,
                     freeDeliveryThreshold: parseFloat(adminSettingsForm.freeDeliveryThreshold) || 0,
-                    currencySymbol: adminSettingsForm.currencySymbol.trim() || '$',
+                    currencySymbol: adminSettingsForm.currencySymbol.trim() || '₹',
                   });
                   showNotification('All Admin details and settings saved!');
                 }}
