@@ -57,6 +57,8 @@ export const AdminPage: React.FC = () => {
     updateOrderStatus,
     updateCustomRequest,
     updateSettings,
+    clearAllStoreData,
+    loadSampleDemoData,
     navigateTo,
     showNotification,
   } = useStore();
@@ -119,7 +121,7 @@ export const AdminPage: React.FC = () => {
     price: '',
     description: '',
     category: '',
-    availableQuantity: '10',
+    isSoldOut: false,
     colors: 'Rose Pink, Cream, Sage Green',
     images: 'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=800&q=80',
     details: 'Handmade with 100% Cotton Yarn, Washable',
@@ -187,7 +189,7 @@ export const AdminPage: React.FC = () => {
               Store Admin Portal
             </h1>
             <p className="text-xs text-[#5A3E2B]/85 leading-relaxed">
-              Manage your crochet products, inventory, orders, custom commissions, and business details.
+              Manage your handmade crochet creations, orders, custom commissions, and business details.
             </p>
           </div>
 
@@ -302,7 +304,7 @@ export const AdminPage: React.FC = () => {
       price: prod.price.toString(),
       description: prod.description,
       category: prod.category,
-      availableQuantity: prod.availableQuantity.toString(),
+      isSoldOut: !!prod.isSoldOut,
       colors: prod.colors.join(', '),
       images: prod.images.join(', '),
       details: prod.details ? prod.details.join(', ') : '',
@@ -320,8 +322,8 @@ export const AdminPage: React.FC = () => {
       name: '',
       price: '',
       description: '',
-      category: categories.length > 0 ? categories[0].name : 'Crochet Flowers',
-      availableQuantity: '10',
+      category: categories.length > 0 ? categories[0].name : '',
+      isSoldOut: false,
       colors: 'Peach, Cream, Mint',
       images: 'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=800&q=80',
       details: 'Handmade with 100% Milk Cotton, Ultra-soft',
@@ -336,7 +338,6 @@ export const AdminPage: React.FC = () => {
   const handleSaveProduct = (e: React.FormEvent) => {
     e.preventDefault();
     const priceNum = parseFloat(prodForm.price) || 0;
-    const qtyNum = parseInt(prodForm.availableQuantity, 10) || 0;
 
     const imagesArray = prodForm.images
       .split(',')
@@ -359,7 +360,8 @@ export const AdminPage: React.FC = () => {
         price: priceNum,
         description: prodForm.description,
         category: prodForm.category,
-        availableQuantity: qtyNum,
+        isSoldOut: prodForm.isSoldOut,
+        availableQuantity: prodForm.isSoldOut ? 0 : 999,
         colors: colorsArray,
         images: imagesArray,
         details: detailsArray,
@@ -374,7 +376,8 @@ export const AdminPage: React.FC = () => {
         price: priceNum,
         description: prodForm.description,
         category: prodForm.category,
-        availableQuantity: qtyNum,
+        isSoldOut: prodForm.isSoldOut,
+        availableQuantity: prodForm.isSoldOut ? 0 : 999,
         colors: colorsArray,
         images: imagesArray,
         details: detailsArray,
@@ -625,22 +628,28 @@ export const AdminPage: React.FC = () => {
               </div>
 
               <div className="divide-y divide-[#E8DCCB]">
-                {orders.slice(0, 4).map((order) => (
-                  <div key={order.id} className="py-3 flex items-center justify-between text-xs gap-4">
-                    <div>
-                      <span className="font-bold text-[#3B2920]">#{order.id}</span>
-                      <p className="text-[#5A3E2B]">{order.customerName} • {order.phone}</p>
+                {orders.length > 0 ? (
+                  orders.slice(0, 4).map((order) => (
+                    <div key={order.id} className="py-3 flex items-center justify-between text-xs gap-4">
+                      <div>
+                        <span className="font-bold text-[#3B2920]">#{order.id}</span>
+                        <p className="text-[#5A3E2B]">{order.customerName} • {order.phone}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-[#3B2920] block">
+                          {settings.currencySymbol}{order.total.toFixed(2)}
+                        </span>
+                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#E8DCCB] text-[#5A3E2B]">
+                          {order.status}
+                        </span>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className="font-bold text-[#3B2920] block">
-                        {settings.currencySymbol}{order.total.toFixed(2)}
-                      </span>
-                      <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#E8DCCB] text-[#5A3E2B]">
-                        {order.status}
-                      </span>
-                    </div>
+                  ))
+                ) : (
+                  <div className="py-6 text-center text-xs text-[#5A3E2B]/75">
+                    No orders placed yet. As customers order from your shop, they will automatically appear here.
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>
@@ -676,78 +685,86 @@ export const AdminPage: React.FC = () => {
                       <th className="p-4">Item</th>
                       <th className="p-4">Category</th>
                       <th className="p-4">Price</th>
-                      <th className="p-4">Stock</th>
                       <th className="p-4">Status</th>
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E8DCCB]">
-                    {products.map((prod) => (
-                      <tr key={prod.id} className="hover:bg-[#E8DCCB]/20 transition-colors">
-                        <td className="p-4 flex items-center gap-3">
-                          <img
-                            src={prod.images[0] || 'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=100&q=80'}
-                            alt={prod.name}
-                            className="w-10 h-10 rounded-lg object-cover bg-[#E8DCCB]"
-                          />
-                          <div>
-                            <span className="font-bold text-[#3B2920] text-sm block">{prod.name}</span>
-                            <span className="text-[10px] text-[#A67C52]">{prod.colors.join(', ')}</span>
-                          </div>
-                        </td>
-                        <td className="p-4">{prod.category}</td>
-                        <td className="p-4 font-bold text-[#3B2920]">
-                          {settings.currencySymbol}{prod.price.toFixed(2)}
-                        </td>
-                        <td className="p-4">
-                          <input
-                            type="number"
-                            min="0"
-                            value={prod.availableQuantity}
-                            onChange={(e) =>
-                              updateProduct(prod.id, {
-                                availableQuantity: parseInt(e.target.value, 10) || 0,
-                              })
-                            }
-                            className="w-16 bg-[#F8F3EA] border border-[#C7A98A] rounded-lg px-2 py-1 text-center font-bold text-[#3B2920]"
-                          />
-                        </td>
-                        <td className="p-4">
-                          <button
-                            onClick={() =>
-                              updateProduct(prod.id, { isSoldOut: !prod.isSoldOut })
-                            }
-                            className={`px-2.5 py-1 rounded-full text-[10px] font-semibold cursor-pointer ${
-                              prod.isSoldOut || prod.availableQuantity <= 0
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-emerald-100 text-emerald-800'
-                            }`}
-                          >
-                            {prod.isSoldOut || prod.availableQuantity <= 0 ? 'Sold Out' : 'Available'}
-                          </button>
-                        </td>
-                        <td className="p-4 text-right space-x-2">
-                          <button
-                            onClick={() => handleOpenEditProduct(prod)}
-                            className="p-1.5 text-[#5A3E2B] hover:text-[#A67C52]"
-                            title="Edit"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              if (confirm(`Delete "${prod.name}" permanently?`)) {
-                                deleteProduct(prod.id);
+                    {products.length > 0 ? (
+                      products.map((prod) => (
+                        <tr key={prod.id} className="hover:bg-[#E8DCCB]/20 transition-colors">
+                          <td className="p-4 flex items-center gap-3">
+                            <img
+                              src={prod.images[0] || 'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=100&q=80'}
+                              alt={prod.name}
+                              className="w-10 h-10 rounded-lg object-cover bg-[#E8DCCB]"
+                            />
+                            <div>
+                              <span className="font-bold text-[#3B2920] text-sm block">{prod.name}</span>
+                              <span className="text-[10px] text-[#A67C52]">{prod.colors.join(', ')}</span>
+                            </div>
+                          </td>
+                          <td className="p-4">{prod.category}</td>
+                          <td className="p-4 font-bold text-[#3B2920]">
+                            {settings.currencySymbol}{prod.price.toFixed(2)}
+                          </td>
+                          <td className="p-4">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                updateProduct(prod.id, {
+                                  isSoldOut: !prod.isSoldOut,
+                                  availableQuantity: !prod.isSoldOut ? 0 : 999,
+                                })
                               }
-                            }}
-                            className="p-1.5 text-red-600 hover:text-red-800"
-                            title="Delete"
+                              className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-colors cursor-pointer inline-flex items-center gap-1.5 ${
+                                prod.isSoldOut
+                                  ? 'bg-red-100 text-red-800 hover:bg-red-200 border border-red-200'
+                                  : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-200'
+                              }`}
+                              title="Click to toggle availability"
+                            >
+                              <span className={`w-1.5 h-1.5 rounded-full ${prod.isSoldOut ? 'bg-red-600' : 'bg-emerald-600'}`} />
+                              <span>{prod.isSoldOut ? 'Sold Out' : 'Available'}</span>
+                            </button>
+                          </td>
+                          <td className="p-4 text-right space-x-2">
+                            <button
+                              onClick={() => handleOpenEditProduct(prod)}
+                              className="p-1.5 text-[#5A3E2B] hover:text-[#A67C52]"
+                              title="Edit"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm(`Delete "${prod.name}" permanently?`)) {
+                                  deleteProduct(prod.id);
+                                }
+                              }}
+                              className="p-1.5 text-red-600 hover:text-red-800"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="p-10 text-center text-xs text-[#5A3E2B]/80">
+                          <p className="font-bold text-sm text-[#3B2920] mb-1">No products in store</p>
+                          <p className="mb-4">The store is completely clear. Click below to add your first handcrafted product.</p>
+                          <button
+                            type="button"
+                            onClick={handleOpenAddProduct}
+                            className="bg-[#5A3E2B] text-[#F8F3EA] px-4 py-2 rounded-full text-xs font-semibold hover:bg-[#A67C52] transition-colors cursor-pointer"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            + Add First Product
                           </button>
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -818,52 +835,59 @@ export const AdminPage: React.FC = () => {
             </div>
 
             {/* List Categories */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {categories.map((cat) => (
-                <div
-                  key={cat.id}
-                  className="bg-[#F8F3EA] p-4 rounded-2xl border border-[#E8DCCB] flex items-center justify-between gap-3 shadow-xs"
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={cat.image || 'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=100&q=80'}
-                      alt={cat.name}
-                      className="w-12 h-12 rounded-xl object-cover bg-[#E8DCCB]"
-                    />
-                    <div>
-                      <p className="font-bold text-[#3B2920] text-sm">{cat.name}</p>
-                      <p className="text-[11px] text-[#5A3E2B]/70">{cat.description || cat.slug}</p>
+            {categories.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {categories.map((cat) => (
+                  <div
+                    key={cat.id}
+                    className="bg-[#F8F3EA] p-4 rounded-2xl border border-[#E8DCCB] flex items-center justify-between gap-3 shadow-xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={cat.image || 'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=100&q=80'}
+                        alt={cat.name}
+                        className="w-12 h-12 rounded-xl object-cover bg-[#E8DCCB]"
+                      />
+                      <div>
+                        <p className="font-bold text-[#3B2920] text-sm">{cat.name}</p>
+                        <p className="text-[11px] text-[#5A3E2B]/70">{cat.description || cat.slug}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => {
+                          const newName = prompt('Rename category to:', cat.name);
+                          if (newName && newName.trim()) {
+                            updateCategory(cat.id, { name: newName.trim() });
+                          }
+                        }}
+                        className="p-1.5 text-[#5A3E2B] hover:text-[#A67C52]"
+                        title="Rename"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Delete category "${cat.name}"?`)) {
+                            deleteCategory(cat.id);
+                          }
+                        }}
+                        className="p-1.5 text-red-600 hover:text-red-800"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => {
-                        const newName = prompt('Rename category to:', cat.name);
-                        if (newName && newName.trim()) {
-                          updateCategory(cat.id, { name: newName.trim() });
-                        }
-                      }}
-                      className="p-1.5 text-[#5A3E2B] hover:text-[#A67C52]"
-                      title="Rename"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (confirm(`Delete category "${cat.name}"?`)) {
-                          deleteCategory(cat.id);
-                        }
-                      }}
-                      className="p-1.5 text-red-600 hover:text-red-800"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center text-xs text-[#5A3E2B]/80 bg-[#F8F3EA] rounded-2xl border border-[#E8DCCB]">
+                <p className="font-bold text-sm text-[#3B2920] mb-1">No categories created yet</p>
+                <p>Use the form above to create your first category (such as Crochet Flowers, Amigurumi Toys, Baby Booties, or Handmade Bags).</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -879,75 +903,82 @@ export const AdminPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="space-y-4">
-              {orders.map((order) => (
-                <div
-                  key={order.id}
-                  className="bg-[#F8F3EA] rounded-3xl border border-[#E8DCCB] p-5 sm:p-6 space-y-4 shadow-xs"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E8DCCB] pb-3">
-                    <div>
-                      <span className="font-bold text-[#3B2920] text-base">Order #{order.id}</span>
-                      <span className="text-xs text-[#A67C52] ml-2">
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-
-                    {/* Status Dropdown */}
-                    <div className="flex items-center gap-2">
-                      <label htmlFor={`status-select-${order.id}`} className="text-xs font-semibold text-[#5A3E2B]">Status:</label>
-                      <select
-                        id={`status-select-${order.id}`}
-                        value={order.status}
-                        onChange={(e) =>
-                          updateOrderStatus(order.id, e.target.value as OrderStatus)
-                        }
-                        className="bg-[#E8DCCB] border border-[#C7A98A] rounded-xl px-3 py-1 text-xs font-bold text-[#3B2920] cursor-pointer"
-                      >
-                        <option value="Order Received">Order Received</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Ready">Ready</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-[#5A3E2B]">
-                    <div>
-                      <p><strong className="text-[#3B2920]">Customer:</strong> {order.customerName}</p>
-                      <p><strong className="text-[#3B2920]">Phone:</strong> {order.phone}</p>
-                      {order.email && <p><strong className="text-[#3B2920]">Email:</strong> {order.email}</p>}
-                      <p className="mt-1">
-                        <strong className="text-[#3B2920]">Address:</strong> {order.address}, {order.city}, {order.state} {order.pincode}
-                      </p>
-                      {order.orderNotes && (
-                        <p className="mt-1 italic bg-[#E8DCCB]/40 p-2 rounded-lg">
-                          "{order.orderNotes}"
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="font-bold text-[#3B2920]">Ordered Items:</p>
-                      {order.items.map((it, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-[#E8DCCB]/40 pb-1">
-                          <span>{it.quantity}x {it.product.name} {it.selectedColor && `(${it.selectedColor})`}</span>
-                          <span>{settings.currencySymbol}{(it.product.price * it.quantity).toFixed(2)}</span>
-                        </div>
-                      ))}
-                      <div className="flex justify-between font-bold text-[#3B2920] pt-1">
-                        <span>Total (incl. {settings.currencySymbol}{order.deliveryCharge} delivery):</span>
-                        <span>{settings.currencySymbol}{order.total.toFixed(2)}</span>
+            {orders.length > 0 ? (
+              <div className="space-y-4">
+                {orders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="bg-[#F8F3EA] rounded-3xl border border-[#E8DCCB] p-5 sm:p-6 space-y-4 shadow-xs"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E8DCCB] pb-3">
+                      <div>
+                        <span className="font-bold text-[#3B2920] text-base">Order #{order.id}</span>
+                        <span className="text-xs text-[#A67C52] ml-2">
+                          {new Date(order.createdAt).toLocaleDateString()}
+                        </span>
                       </div>
-                      <p className="text-[10px] text-[#A67C52]">Method: {order.paymentMethod}</p>
+
+                      {/* Status Dropdown */}
+                      <div className="flex items-center gap-2">
+                        <label htmlFor={`status-select-${order.id}`} className="text-xs font-semibold text-[#5A3E2B]">Status:</label>
+                        <select
+                          id={`status-select-${order.id}`}
+                          value={order.status}
+                          onChange={(e) =>
+                            updateOrderStatus(order.id, e.target.value as OrderStatus)
+                          }
+                          className="bg-[#E8DCCB] border border-[#C7A98A] rounded-xl px-3 py-1 text-xs font-bold text-[#3B2920] cursor-pointer"
+                        >
+                          <option value="Order Received">Order Received</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Ready">Ready</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-[#5A3E2B]">
+                      <div>
+                        <p><strong className="text-[#3B2920]">Customer:</strong> {order.customerName}</p>
+                        <p><strong className="text-[#3B2920]">Phone:</strong> {order.phone}</p>
+                        {order.email && <p><strong className="text-[#3B2920]">Email:</strong> {order.email}</p>}
+                        <p className="mt-1">
+                          <strong className="text-[#3B2920]">Address:</strong> {order.address}, {order.city}, {order.state} {order.pincode}
+                        </p>
+                        {order.orderNotes && (
+                          <p className="mt-1 italic bg-[#E8DCCB]/40 p-2 rounded-lg">
+                            "{order.orderNotes}"
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="font-bold text-[#3B2920]">Ordered Items:</p>
+                        {order.items.map((it, idx) => (
+                          <div key={idx} className="flex justify-between border-b border-[#E8DCCB]/40 pb-1">
+                            <span>{it.quantity}x {it.product.name} {it.selectedColor && `(${it.selectedColor})`}</span>
+                            <span>{settings.currencySymbol}{(it.product.price * it.quantity).toFixed(2)}</span>
+                          </div>
+                        ))}
+                        <div className="flex justify-between font-bold text-[#3B2920] pt-1">
+                          <span>Total (incl. {settings.currencySymbol}{order.deliveryCharge} delivery):</span>
+                          <span>{settings.currencySymbol}{order.total.toFixed(2)}</span>
+                        </div>
+                        <p className="text-[10px] text-[#A67C52]">Method: {order.paymentMethod}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center text-xs text-[#5A3E2B]/80 bg-[#F8F3EA] rounded-2xl border border-[#E8DCCB]">
+                <p className="font-bold text-sm text-[#3B2920] mb-1">No orders received yet</p>
+                <p>When customers buy items through the website checkout, their order details and shipping addresses will appear here.</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -963,112 +994,119 @@ export const AdminPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="space-y-4">
-              {customRequests.map((req) => (
-                <div
-                  key={req.id}
-                  className="bg-[#F8F3EA] rounded-3xl border border-[#E8DCCB] p-5 sm:p-6 space-y-4 shadow-xs"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E8DCCB] pb-3">
-                    <div>
-                      <span className="font-bold text-[#3B2920] text-base">Request #{req.id}</span>
-                      <span className="text-xs text-[#A67C52] ml-2">
-                        {new Date(req.dateSubmitted).toLocaleDateString()}
-                      </span>
-                    </div>
-
-                    {/* Status Dropdown */}
-                    <div className="flex items-center gap-2">
-                      <label htmlFor={`custom-status-select-${req.id}`} className="text-xs font-semibold text-[#5A3E2B]">Status:</label>
-                      <select
-                        id={`custom-status-select-${req.id}`}
-                        value={req.status}
-                        onChange={(e) =>
-                          updateCustomRequest(req.id, {
-                            status: e.target.value as CustomRequestStatus,
-                          })
-                        }
-                        className="bg-[#E8DCCB] border border-[#C7A98A] rounded-xl px-3 py-1 text-xs font-bold text-[#3B2920] cursor-pointer"
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Reviewing">Reviewing</option>
-                        <option value="Accepted">Accepted</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs text-[#5A3E2B]">
-                    <div className="md:col-span-8 space-y-2">
-                      <p><strong className="text-[#3B2920]">Customer:</strong> {req.customerName}</p>
-                      <p><strong className="text-[#3B2920]">Contact:</strong> {req.contactNumber} {req.email && `• ${req.email}`}</p>
-                      <div className="bg-[#E8DCCB]/40 p-3.5 rounded-2xl border border-[#C7A98A]/30">
-                        <p className="font-bold text-[#3B2920] mb-1">Customer Requirements:</p>
-                        <p className="leading-relaxed whitespace-pre-wrap">{req.requirements}</p>
+            {customRequests.length > 0 ? (
+              <div className="space-y-4">
+                {customRequests.map((req) => (
+                  <div
+                    key={req.id}
+                    className="bg-[#F8F3EA] rounded-3xl border border-[#E8DCCB] p-5 sm:p-6 space-y-4 shadow-xs"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E8DCCB] pb-3">
+                      <div>
+                        <span className="font-bold text-[#3B2920] text-base">Request #{req.id}</span>
+                        <span className="text-xs text-[#A67C52] ml-2">
+                          {new Date(req.dateSubmitted).toLocaleDateString()}
+                        </span>
                       </div>
 
-                      {/* Admin Note & Final Price */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                        <div>
-                          <label className="block text-[11px] font-bold text-[#3B2920] uppercase mb-1">
-                            Set Final Price ({settings.currencySymbol})
-                          </label>
-                          <input
-                            type="number"
-                            placeholder="e.g. 45"
-                            defaultValue={req.finalPrice || ''}
-                            onBlur={(e) => {
-                              const val = parseFloat(e.target.value);
-                              if (!isNaN(val)) {
-                                updateCustomRequest(req.id, { finalPrice: val });
-                              }
-                            }}
-                            className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3 py-1.5 text-xs text-[#3B2920]"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-[11px] font-bold text-[#3B2920] uppercase mb-1">
-                            Admin Internal Note
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. Needs baby yellow yarn"
-                            defaultValue={req.adminNote || ''}
-                            onBlur={(e) => {
-                              updateCustomRequest(req.id, { adminNote: e.target.value });
-                            }}
-                            className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3 py-1.5 text-xs text-[#3B2920]"
-                          />
-                        </div>
+                      {/* Status Dropdown */}
+                      <div className="flex items-center gap-2">
+                        <label htmlFor={`custom-status-select-${req.id}`} className="text-xs font-semibold text-[#5A3E2B]">Status:</label>
+                        <select
+                          id={`custom-status-select-${req.id}`}
+                          value={req.status}
+                          onChange={(e) =>
+                            updateCustomRequest(req.id, {
+                              status: e.target.value as CustomRequestStatus,
+                            })
+                          }
+                          className="bg-[#E8DCCB] border border-[#C7A98A] rounded-xl px-3 py-1 text-xs font-bold text-[#3B2920] cursor-pointer"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Reviewing">Reviewing</option>
+                          <option value="Accepted">Accepted</option>
+                          <option value="Rejected">Rejected</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Completed">Completed</option>
+                        </select>
                       </div>
                     </div>
 
-                    {/* Reference Image */}
-                    <div className="md:col-span-4 flex flex-col items-center justify-center p-2 bg-[#E8DCCB]/30 rounded-2xl border border-[#E8DCCB]">
-                      {req.referenceImage ? (
-                        <div className="space-y-1 text-center">
-                          <img
-                            src={req.referenceImage}
-                            alt="Reference"
-                            className="w-32 h-32 object-cover rounded-xl border border-[#C7A98A] shadow-xs"
-                          />
-                          <span className="text-[10px] text-[#A67C52] font-semibold">
-                            Customer Reference Photo
-                          </span>
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs text-[#5A3E2B]">
+                      <div className="md:col-span-8 space-y-2">
+                        <p><strong className="text-[#3B2920]">Customer:</strong> {req.customerName}</p>
+                        <p><strong className="text-[#3B2920]">Contact:</strong> {req.contactNumber} {req.email && `• ${req.email}`}</p>
+                        <div className="bg-[#E8DCCB]/40 p-3.5 rounded-2xl border border-[#C7A98A]/30">
+                          <p className="font-bold text-[#3B2920] mb-1">Customer Requirements:</p>
+                          <p className="leading-relaxed whitespace-pre-wrap">{req.requirements}</p>
                         </div>
-                      ) : (
-                        <p className="text-[11px] text-[#5A3E2B]/60 italic">
-                          No reference image attached
-                        </p>
-                      )}
+
+                        {/* Admin Note & Final Price */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                          <div>
+                            <label className="block text-[11px] font-bold text-[#3B2920] uppercase mb-1">
+                              Set Final Price ({settings.currencySymbol})
+                            </label>
+                            <input
+                              type="number"
+                              placeholder="e.g. 45"
+                              defaultValue={req.finalPrice || ''}
+                              onBlur={(e) => {
+                                const val = parseFloat(e.target.value);
+                                if (!isNaN(val)) {
+                                  updateCustomRequest(req.id, { finalPrice: val });
+                                }
+                              }}
+                              className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3 py-1.5 text-xs text-[#3B2920]"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-bold text-[#3B2920] uppercase mb-1">
+                              Admin Internal Note
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Needs baby yellow yarn"
+                              defaultValue={req.adminNote || ''}
+                              onBlur={(e) => {
+                                updateCustomRequest(req.id, { adminNote: e.target.value });
+                              }}
+                              className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3 py-1.5 text-xs text-[#3B2920]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Reference Image */}
+                      <div className="md:col-span-4 flex flex-col items-center justify-center p-2 bg-[#E8DCCB]/30 rounded-2xl border border-[#E8DCCB]">
+                        {req.referenceImage ? (
+                          <div className="space-y-1 text-center">
+                            <img
+                              src={req.referenceImage}
+                              alt="Reference"
+                              className="w-32 h-32 object-cover rounded-xl border border-[#C7A98A] shadow-xs"
+                            />
+                            <span className="text-[10px] text-[#A67C52] font-semibold">
+                              Customer Reference Photo
+                            </span>
+                          </div>
+                        ) : (
+                          <p className="text-[11px] text-[#5A3E2B]/60 italic">
+                            No reference image attached
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center text-xs text-[#5A3E2B]/80 bg-[#F8F3EA] rounded-2xl border border-[#E8DCCB]">
+                <p className="font-bold text-sm text-[#3B2920] mb-1">No custom requests yet</p>
+                <p>When visitors submit personalized crochet orders via the "Custom Order" form, they will appear here for review and quoting.</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -1096,10 +1134,10 @@ export const AdminPage: React.FC = () => {
                     adminPassword: adminSettingsForm.adminPassword.trim() || 'crochet123',
                     paymentUpiId: adminSettingsForm.paymentUpiId.trim(),
                     paymentInstructions: adminSettingsForm.paymentInstructions.trim(),
-                    storeName: adminSettingsForm.storeName.trim() || 'MY CROCHET STORE',
+                    storeName: adminSettingsForm.storeName.trim() || 'le.crochet___',
                     tagline: adminSettingsForm.tagline.trim(),
-                    instagramHandle: adminSettingsForm.instagramHandle.trim().replace(/^@/, ''),
-                    instagramUrl: adminSettingsForm.instagramUrl.trim(),
+                    instagramHandle: adminSettingsForm.instagramHandle.trim().replace(/^@/, '') || 'le.crochet___',
+                    instagramUrl: adminSettingsForm.instagramUrl.trim() || 'https://instagram.com/le.crochet___',
                     deliveryFee: parseFloat(adminSettingsForm.deliveryFee) || 0,
                     freeDeliveryThreshold: parseFloat(adminSettingsForm.freeDeliveryThreshold) || 0,
                     currencySymbol: adminSettingsForm.currencySymbol.trim() || '$',
@@ -1445,7 +1483,7 @@ export const AdminPage: React.FC = () => {
                             instagramHandle: adminSettingsForm.instagramHandle.replace(/^@/, ''),
                           })
                         }
-                        placeholder="leh_crochet___"
+                        placeholder="le.crochet___"
                         className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3.5 py-2 text-xs sm:text-sm text-[#3B2920]"
                       />
                     </div>
@@ -1464,7 +1502,7 @@ export const AdminPage: React.FC = () => {
                           })
                         }
                         onBlur={() => updateSettings({ instagramUrl: adminSettingsForm.instagramUrl })}
-                        placeholder="https://instagram.com/..."
+                        placeholder="https://instagram.com/le.crochet___"
                         className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3.5 py-2 text-xs sm:text-sm text-[#3B2920]"
                       />
                     </div>
@@ -1544,6 +1582,45 @@ export const AdminPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Store Data Reset & Demo Controls */}
+            <div className="bg-[#F8F3EA] rounded-3xl border border-[#E8DCCB] p-6 space-y-4 shadow-xs">
+              <div className="flex items-center gap-2">
+                <Trash2 className="w-5 h-5 text-red-700" />
+                <h2 className="font-serif-heading text-lg font-bold text-[#3B2920]">
+                  Store Data Controls
+                </h2>
+              </div>
+              <p className="text-xs text-[#5A3E2B]/85 leading-relaxed">
+                Need a fresh start or want to preview with sample pieces again? You can manage your store catalog and customer records below.
+              </p>
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm('Are you sure you want to clear all products, categories, orders, and custom requests? This will set your store to a completely clean slate.')) {
+                      clearAllStoreData();
+                    }
+                  }}
+                  className="bg-red-50 text-red-700 border border-red-200 px-4 py-2 rounded-full text-xs font-semibold hover:bg-red-100 transition-colors cursor-pointer inline-flex items-center gap-2"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Clear All Store Data</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm('Load sample demo products, categories, orders, and custom requests into your store?')) {
+                      loadSampleDemoData();
+                    }
+                  }}
+                  className="bg-[#E8DCCB] text-[#5A3E2B] border border-[#C7A98A] px-4 py-2 rounded-full text-xs font-semibold hover:bg-[#C7A98A]/40 transition-colors cursor-pointer inline-flex items-center gap-2"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Load Sample Demo Data</span>
+                </button>
+              </div>
+            </div>
+
             <div className="p-4 bg-[#E8DCCB]/50 rounded-2xl border border-[#C7A98A]/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#5A3E2B]">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-[#A67C52]" />
@@ -1560,10 +1637,10 @@ export const AdminPage: React.FC = () => {
                     adminPassword: adminSettingsForm.adminPassword.trim() || 'Minnu@098',
                     paymentUpiId: adminSettingsForm.paymentUpiId.trim(),
                     paymentInstructions: adminSettingsForm.paymentInstructions.trim(),
-                    storeName: adminSettingsForm.storeName.trim() || 'LEH_CROCHET',
+                    storeName: adminSettingsForm.storeName.trim() || 'le.crochet___',
                     tagline: adminSettingsForm.tagline.trim(),
-                    instagramHandle: adminSettingsForm.instagramHandle.trim().replace(/^@/, ''),
-                    instagramUrl: adminSettingsForm.instagramUrl.trim(),
+                    instagramHandle: adminSettingsForm.instagramHandle.trim().replace(/^@/, '') || 'le.crochet___',
+                    instagramUrl: adminSettingsForm.instagramUrl.trim() || 'https://instagram.com/le.crochet___',
                     deliveryFee: parseFloat(adminSettingsForm.deliveryFee) || 0,
                     freeDeliveryThreshold: parseFloat(adminSettingsForm.freeDeliveryThreshold) || 0,
                     currencySymbol: adminSettingsForm.currencySymbol.trim() || '₹',
@@ -1629,33 +1706,35 @@ export const AdminPage: React.FC = () => {
                   <label className="block font-semibold text-[#3B2920] uppercase mb-1">
                     Category
                   </label>
-                  <select
+                  <input
+                    list="category-suggestions"
+                    required
                     value={prodForm.category}
                     onChange={(e) => setProdForm({ ...prodForm, category: e.target.value })}
+                    placeholder="e.g. Crochet Flowers"
                     className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3.5 py-2 text-xs sm:text-sm text-[#3B2920]"
-                  >
+                  />
+                  <datalist id="category-suggestions">
                     {categories.map((c) => (
-                      <option key={c.id} value={c.name}>
-                        {c.name}
-                      </option>
+                      <option key={c.id} value={c.name} />
                     ))}
-                  </select>
+                  </datalist>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-[#3B2920] uppercase mb-1">
-                    Available Quantity
+                    Handmade Status
                   </label>
-                  <input
-                    type="number"
-                    min="0"
-                    required
-                    value={prodForm.availableQuantity}
-                    onChange={(e) => setProdForm({ ...prodForm, availableQuantity: e.target.value })}
+                  <select
+                    value={prodForm.isSoldOut ? 'soldout' : 'available'}
+                    onChange={(e) => setProdForm({ ...prodForm, isSoldOut: e.target.value === 'soldout' })}
                     className="w-full bg-[#F8F3EA] border border-[#C7A98A] rounded-xl px-3.5 py-2 text-xs sm:text-sm text-[#3B2920]"
-                  />
+                  >
+                    <option value="available">Available / Active</option>
+                    <option value="soldout">Sold Out / Unavailable</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block font-semibold text-[#3B2920] uppercase mb-1">

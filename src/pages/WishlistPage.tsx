@@ -168,13 +168,9 @@ export const WishlistPage: React.FC = () => {
                         <span className="bg-[#3B2920]/90 text-[#F8F3EA] text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase">
                           Sold Out
                         </span>
-                      ) : product.availableQuantity <= 3 ? (
-                        <span className="bg-[#F8F3EA]/95 text-[#C2410C] text-[10px] font-semibold px-2 py-0.5 rounded-md border border-[#C7A98A]/40 shadow-xs">
-                          Only {product.availableQuantity} left
-                        </span>
                       ) : (
                         <span className="bg-[#F8F3EA]/95 text-emerald-800 text-[10px] font-medium px-2 py-0.5 rounded-md border border-emerald-200">
-                          In Stock
+                          Handmade & Available
                         </span>
                       )}
                     </div>

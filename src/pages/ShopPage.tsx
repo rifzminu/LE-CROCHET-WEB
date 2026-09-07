@@ -212,23 +212,27 @@ export const ShopPage: React.FC = () => {
             <Sparkles className="w-6 h-6" />
           </div>
           <h3 className="font-serif-heading text-xl font-bold text-[#3B2920]">
-            No matching crochet pieces
+            {products.length === 0 ? 'Our Shop is Getting Ready' : 'No matching crochet pieces'}
           </h3>
           <p className="text-xs text-[#5A3E2B]/80 leading-relaxed">
-            We couldn't find any products matching your current filters. You can clear your filters or submit a custom order request!
+            {products.length === 0
+              ? "No crochet products are currently listed in the store. Feel free to submit a custom order request and have any design handcrafted for you!"
+              : "We couldn't find any products matching your current filters. You can clear your filters or submit a custom order request!"}
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
-            <button
-              onClick={clearAllFilters}
-              className="bg-[#5A3E2B] text-[#F8F3EA] px-4 py-2 rounded-full text-xs font-semibold hover:bg-[#A67C52] transition-colors"
-            >
-              Show All Products
-            </button>
+            {products.length > 0 && (
+              <button
+                onClick={clearAllFilters}
+                className="bg-[#5A3E2B] text-[#F8F3EA] px-4 py-2 rounded-full text-xs font-semibold hover:bg-[#A67C52] transition-colors"
+              >
+                Show All Products
+              </button>
+            )}
             <button
               onClick={() => navigateTo('custom-order')}
-              className="bg-[#E8DCCB] text-[#3B2920] px-4 py-2 rounded-full text-xs font-semibold border border-[#C7A98A] hover:bg-[#C7A98A]/30 transition-colors"
+              className="bg-[#5A3E2B] text-[#F8F3EA] px-5 py-2.5 rounded-full text-xs font-semibold hover:bg-[#A67C52] transition-colors cursor-pointer"
             >
-              Request Custom
+              Request Custom Crochet
             </button>
           </div>
         </div>

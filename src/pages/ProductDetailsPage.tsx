@@ -177,8 +177,12 @@ export const ProductDetailsPage: React.FC = () => {
               <span className="text-2xl sm:text-3xl font-bold text-[#3B2920]">
                 {settings.currencySymbol}{product.price.toFixed(2)}
               </span>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-[#E8DCCB] text-[#5A3E2B] font-medium">
-                {isSoldOut ? 'Sold Out' : `${product.availableQuantity} pieces available`}
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                isSoldOut
+                  ? 'bg-red-100 text-red-800'
+                  : 'bg-[#E8DCCB] text-[#5A3E2B]'
+              }`}>
+                {isSoldOut ? 'Sold Out' : 'Handmade & Available'}
               </span>
             </div>
 

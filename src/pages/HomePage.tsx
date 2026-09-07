@@ -114,83 +114,109 @@ export const HomePage: React.FC = () => {
               Little Handmade Treasures
             </h2>
           </div>
-          <button
-            onClick={() => navigateTo('shop')}
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#5A3E2B] hover:text-[#A67C52] transition-colors cursor-pointer group self-start sm:self-auto"
-          >
-            <span>View All Products</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+          {products.length > 0 && (
+            <button
+              onClick={() => navigateTo('shop')}
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#5A3E2B] hover:text-[#A67C52] transition-colors cursor-pointer group self-start sm:self-auto"
+            >
+              <span>View All Products</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          )}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {products.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
+            {(featuredProducts.length > 0 ? featuredProducts : products.slice(0, 4)).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 px-6 bg-[#E8DCCB]/30 rounded-3xl border border-[#E8DCCB] max-w-xl mx-auto space-y-3">
+            <Sparkles className="w-8 h-8 text-[#A67C52] mx-auto" />
+            <h3 className="font-serif-heading text-xl font-bold text-[#3B2920]">
+              Handcrafted Collection in Progress
+            </h3>
+            <p className="text-xs text-[#5A3E2B]/85 leading-relaxed">
+              We are currently preparing brand new handcrafted pieces! In the meantime, you can request any custom crochet creation made specifically for you.
+            </p>
+            <div className="pt-2">
+              <button
+                onClick={() => navigateTo('custom-order')}
+                className="bg-[#5A3E2B] text-[#F8F3EA] px-5 py-2.5 rounded-full text-xs font-semibold hover:bg-[#A67C52] transition-colors cursor-pointer"
+              >
+                Request Custom Order
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* 3. PRODUCT CATEGORIES */}
-      <section className="bg-[#E8DCCB]/30 border-y border-[#E8DCCB] py-12 sm:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-xl mx-auto mb-8">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#A67C52]">
-              Explore by Style
-            </span>
-            <h2 className="font-serif-heading text-3xl sm:text-4xl font-bold text-[#3B2920] mt-1">
-              Shop by Category
-            </h2>
-          </div>
+      {categories.length > 0 && (
+        <section className="bg-[#E8DCCB]/30 border-y border-[#E8DCCB] py-12 sm:py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-xl mx-auto mb-8">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#A67C52]">
+                Explore by Style
+              </span>
+              <h2 className="font-serif-heading text-3xl sm:text-4xl font-bold text-[#3B2920] mt-1">
+                Shop by Category
+              </h2>
+            </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            {categories.slice(0, 6).map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => navigateTo('shop', { categorySlug: cat.slug })}
-                className="group p-3 rounded-2xl bg-[#F8F3EA] border border-[#E8DCCB] hover:border-[#A67C52] transition-all hover:shadow-md text-center cursor-pointer flex flex-col items-center"
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden mb-3 border-2 border-[#E8DCCB] group-hover:scale-105 transition-transform">
-                  <img
-                    src={cat.image || 'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=400&q=80'}
-                    alt={cat.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span className="text-xs sm:text-sm font-semibold text-[#3B2920] group-hover:text-[#A67C52] transition-colors">
-                  {cat.name}
-                </span>
-              </button>
-            ))}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+              {categories.slice(0, 6).map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => navigateTo('shop', { categorySlug: cat.slug })}
+                  className="group p-3 rounded-2xl bg-[#F8F3EA] border border-[#E8DCCB] hover:border-[#A67C52] transition-all hover:shadow-md text-center cursor-pointer flex flex-col items-center"
+                >
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden mb-3 border-2 border-[#E8DCCB] group-hover:scale-105 transition-transform">
+                    <img
+                      src={cat.image || 'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=400&q=80'}
+                      alt={cat.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <span className="text-xs sm:text-sm font-semibold text-[#3B2920] group-hover:text-[#A67C52] transition-colors">
+                    {cat.name}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 4. NEW ARRIVALS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#A67C52]">
-              Fresh Off the Hook
-            </span>
-            <h2 className="font-serif-heading text-3xl sm:text-4xl font-bold text-[#3B2920] mt-1">
-              New Arrivals
-            </h2>
+      {newArrivals.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#A67C52]">
+                Fresh Off the Hook
+              </span>
+              <h2 className="font-serif-heading text-3xl sm:text-4xl font-bold text-[#3B2920] mt-1">
+                New Arrivals
+              </h2>
+            </div>
+            <button
+              onClick={() => navigateTo('shop')}
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#5A3E2B] hover:text-[#A67C52] transition-colors cursor-pointer group self-start sm:self-auto"
+            >
+              <span>Browse Full Store</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
-          <button
-            onClick={() => navigateTo('shop')}
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#5A3E2B] hover:text-[#A67C52] transition-colors cursor-pointer group self-start sm:self-auto"
-          >
-            <span>Browse Full Store</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
-          {newArrivals.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
+            {newArrivals.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 5. CUSTOM ORDER CALLOUT */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

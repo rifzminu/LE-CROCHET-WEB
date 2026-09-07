@@ -14,6 +14,10 @@ import {
   INITIAL_ORDERS,
   INITIAL_CUSTOM_REQUESTS,
   INITIAL_SETTINGS,
+  SAMPLE_DEMO_PRODUCTS,
+  SAMPLE_DEMO_CATEGORIES,
+  SAMPLE_DEMO_ORDERS,
+  SAMPLE_DEMO_CUSTOM_REQUESTS,
 } from '../data/sampleData';
 
 interface NavigationParams {
@@ -80,29 +84,35 @@ interface StoreContextType {
   loginAdmin: (pass: string) => boolean;
   logoutAdmin: () => void;
   updateSettings: (newSettings: Partial<StoreSettings>) => void;
+
+  // Data reset & demo controls
+  clearAllStoreData: () => void;
+  loadSampleDemoData: () => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Purge legacy demo data to ensure a completely fresh clean slate
+  if (typeof window !== 'undefined') {
+    const DEMO_CLEAN_KEY = 'lecrochet_demo_cleared_v2';
+    if (localStorage.getItem(DEMO_CLEAN_KEY) !== 'true') {
+      localStorage.removeItem('crochet_products');
+      localStorage.removeItem('crochet_categories');
+      localStorage.removeItem('crochet_orders');
+      localStorage.removeItem('crochet_custom_requests');
+      localStorage.removeItem('crochet_cart');
+      localStorage.removeItem('crochet_wishlist');
+      localStorage.setItem(DEMO_CLEAN_KEY, 'true');
+    }
+  }
+
   // Products
   const [products, setProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem('crochet_products');
     if (saved) {
       try {
-        const parsed: Product[] = JSON.parse(saved);
-        // If old sample products still had USD low numbers (e.g. 24 for tulip), map them to INR
-        if (parsed.length > 0 && parsed[0].id === 'prod-1' && parsed[0].price <= 50) {
-          return INITIAL_PRODUCTS;
-        }
-        // Ensure prod-9 (baby crochet set) exists in products list
-        if (!parsed.some((p) => p.id === 'prod-9')) {
-          const babyProd = INITIAL_PRODUCTS.find((p) => p.id === 'prod-9');
-          if (babyProd) {
-            return [...parsed, babyProd];
-          }
-        }
-        return parsed;
+        return JSON.parse(saved);
       } catch (e) {
         return INITIAL_PRODUCTS;
       }
@@ -115,14 +125,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const saved = localStorage.getItem('crochet_categories');
     if (saved) {
       try {
-        const parsed: Category[] = JSON.parse(saved);
-        if (!parsed.some((c) => c.id === 'cat-baby')) {
-          const babyCat = INITIAL_CATEGORIES.find((c) => c.id === 'cat-baby');
-          if (babyCat) {
-            return [babyCat, ...parsed];
-          }
-        }
-        return parsed;
+        return JSON.parse(saved);
       } catch (e) {
         return INITIAL_CATEGORIES;
       }
@@ -160,9 +163,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (
           !parsed.storeName ||
           parsed.storeName === 'MY CROCHET STORE' ||
-          parsed.storeName === 'LE_CROCHET'
+          parsed.storeName === 'LE_CROCHET' ||
+          parsed.storeName === 'LEH_CROCHET'
         ) {
-          parsed.storeName = 'LEH_CROCHET';
+          parsed.storeName = 'le.crochet___';
         }
         if (!parsed.currencySymbol || parsed.currencySymbol === '$') {
           parsed.currencySymbol = '₹';
@@ -183,10 +187,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           !parsed.instagramHandle ||
           parsed.instagramHandle === 'mycrochetstore' ||
           parsed.instagramHandle === 'le_crochet' ||
-          parsed.instagramHandle === 'le_crochet__'
+          parsed.instagramHandle === 'le_crochet__' ||
+          parsed.instagramHandle === 'leh_crochet___'
         ) {
-          parsed.instagramHandle = 'leh_crochet___';
-          parsed.instagramUrl = 'https://instagram.com/leh_crochet___';
+          parsed.instagramHandle = 'le.crochet___';
+          parsed.instagramUrl = 'https://instagram.com/le.crochet___';
+        }
+        if (
+          !parsed.instagramUrl ||
+          parsed.instagramUrl === 'https://instagram.com/leh_crochet___' ||
+          parsed.instagramUrl === 'https://instagram.com/le_crochet'
+        ) {
+          parsed.instagramUrl = 'https://instagram.com/le.crochet___';
         }
         return { ...INITIAL_SETTINGS, ...parsed };
       } catch (e) {
@@ -462,6 +474,27 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       createdAt: new Date().toISOString(),
       isSoldOut: prodData.availableQuantity <= 0,
     };
+
+    // If product category isn't in categories list yet, auto-add it
+    if (
+      prodData.category &&
+      prodData.category.trim() &&
+      !categories.some(
+        (c) => c.name.toLowerCase() === prodData.category.trim().toLowerCase()
+      )
+    ) {
+      const catName = prodData.category.trim();
+      const slug = catName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const newCat: Category = {
+        id: `cat-${Date.now()}`,
+        name: catName,
+        slug,
+        description: `Handcrafted ${catName} pieces made with love.`,
+        image: prodData.images[0] || 'https://images.unsplash.com/photo-1590483256085-f5b252ce6480?auto=format&fit=crop&w=800&q=80',
+      };
+      setCategories((prev) => [...prev, newCat]);
+    }
+
     setProducts((prev) => [newProduct, ...prev]);
     showNotification(`Added "${newProduct.name}"`);
     return newProduct;
@@ -551,6 +584,36 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showNotification('Store settings saved');
   };
 
+  // Clear all demo and custom data to a pristine state
+  const clearAllStoreData = () => {
+    setProducts([]);
+    setCategories([]);
+    setOrders([]);
+    setCustomRequests([]);
+    setCart([]);
+    setWishlist([]);
+    localStorage.setItem('crochet_products', JSON.stringify([]));
+    localStorage.setItem('crochet_categories', JSON.stringify([]));
+    localStorage.setItem('crochet_orders', JSON.stringify([]));
+    localStorage.setItem('crochet_custom_requests', JSON.stringify([]));
+    localStorage.setItem('crochet_cart', JSON.stringify([]));
+    localStorage.setItem('crochet_wishlist', JSON.stringify([]));
+    showNotification('All store data, orders, and products cleared');
+  };
+
+  // Load sample demo records if desired
+  const loadSampleDemoData = () => {
+    setProducts(SAMPLE_DEMO_PRODUCTS);
+    setCategories(SAMPLE_DEMO_CATEGORIES);
+    setOrders(SAMPLE_DEMO_ORDERS);
+    setCustomRequests(SAMPLE_DEMO_CUSTOM_REQUESTS);
+    localStorage.setItem('crochet_products', JSON.stringify(SAMPLE_DEMO_PRODUCTS));
+    localStorage.setItem('crochet_categories', JSON.stringify(SAMPLE_DEMO_CATEGORIES));
+    localStorage.setItem('crochet_orders', JSON.stringify(SAMPLE_DEMO_ORDERS));
+    localStorage.setItem('crochet_custom_requests', JSON.stringify(SAMPLE_DEMO_CUSTOM_REQUESTS));
+    showNotification('Loaded sample demo products, categories, and orders');
+  };
+
   return (
     <StoreContext.Provider
       value={{
@@ -595,6 +658,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         loginAdmin,
         logoutAdmin,
         updateSettings,
+        clearAllStoreData,
+        loadSampleDemoData,
       }}
     >
       {children}

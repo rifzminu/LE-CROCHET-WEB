@@ -83,13 +83,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           ) : null}
         </div>
 
-        {/* Available quantity warning if low */}
-        {!isSoldOut && product.availableQuantity <= 3 && (
-          <div className="absolute bottom-2.5 left-2.5 bg-[#F8F3EA]/95 text-[#5A3E2B] text-[10px] font-medium px-2 py-0.5 rounded-md border border-[#C7A98A]/40 shadow-xs">
-            Only {product.availableQuantity} left
-          </div>
-        )}
-
         {/* Quick view icon on hover */}
         <div className="hidden sm:flex absolute inset-0 bg-[#3B2920]/15 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center gap-2">
           <span className="bg-[#F8F3EA] text-[#3B2920] px-3.5 py-1.5 rounded-full text-xs font-medium shadow-md flex items-center gap-1.5">

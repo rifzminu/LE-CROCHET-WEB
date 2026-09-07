@@ -1,25 +1,25 @@
 import { Product, Category, Order, CustomRequest, StoreSettings } from '../types';
 
 export const INITIAL_SETTINGS: StoreSettings = {
-  storeName: 'LEH_CROCHET',
+  storeName: 'le.crochet___',
   tagline: 'Handmade with love • Baby crochet items, forever flowers & cute keepsakes',
-  instagramHandle: 'leh_crochet___',
-  instagramUrl: 'https://instagram.com/leh_crochet___',
+  instagramHandle: 'le.crochet___',
+  instagramUrl: 'https://instagram.com/le.crochet___',
   deliveryFee: 70,
   freeDeliveryThreshold: 999,
-  contactEmail: 'hello@lehcrochet.com',
+  contactEmail: 'hello@lecrochet.com',
   contactPhone: '+91 98765 43210',
   currencySymbol: '₹',
   adminName: 'Crochet Artisan & Owner',
   adminRole: 'Store Owner & Creator',
-  adminEmail: 'admin@lehcrochet.com',
+  adminEmail: 'admin@lecrochet.com',
   adminPhone: '+91 98765 43210',
   adminPassword: 'Minnu@098',
-  paymentUpiId: 'lehcrochet@upi',
+  paymentUpiId: 'lecrochet@upi',
   paymentInstructions: 'Scan UPI QR or pay to UPI ID. DM payment screenshot on Instagram or WhatsApp.',
 };
 
-export const INITIAL_CATEGORIES: Category[] = [
+export const SAMPLE_DEMO_CATEGORIES: Category[] = [
   {
     id: 'cat-baby',
     name: 'Baby Crochet',
@@ -85,7 +85,9 @@ export const INITIAL_CATEGORIES: Category[] = [
   },
 ];
 
-export const INITIAL_PRODUCTS: Product[] = [
+export const INITIAL_CATEGORIES: Category[] = [];
+
+export const SAMPLE_DEMO_PRODUCTS: Product[] = [
   {
     id: 'prod-1',
     name: 'Pastel Tulip Blossom in Clay Pot',
@@ -300,7 +302,9 @@ export const INITIAL_PRODUCTS: Product[] = [
   }
 ];
 
-export const INITIAL_ORDERS: Order[] = [
+export const INITIAL_PRODUCTS: Product[] = [];
+
+export const SAMPLE_DEMO_ORDERS: Order[] = [
   {
     id: 'ORD-84920',
     customerName: 'Sophie Martinez',
@@ -313,12 +317,12 @@ export const INITIAL_ORDERS: Order[] = [
     orderNotes: 'Please pack in gift paper if possible ♡',
     items: [
       {
-        product: INITIAL_PRODUCTS[0],
+        product: SAMPLE_DEMO_PRODUCTS[0],
         quantity: 1,
         selectedColor: 'Dusty Rose',
       },
       {
-        product: INITIAL_PRODUCTS[1],
+        product: SAMPLE_DEMO_PRODUCTS[1],
         quantity: 2,
         selectedColor: 'Pastel Pink & White',
       }
@@ -342,7 +346,7 @@ export const INITIAL_ORDERS: Order[] = [
     orderNotes: '',
     items: [
       {
-        product: INITIAL_PRODUCTS[2],
+        product: SAMPLE_DEMO_PRODUCTS[2],
         quantity: 1,
         selectedColor: 'Earthy Neutral Mix',
       }
@@ -366,7 +370,7 @@ export const INITIAL_ORDERS: Order[] = [
     orderNotes: 'Left at doorstep safely.',
     items: [
       {
-        product: INITIAL_PRODUCTS[3],
+        product: SAMPLE_DEMO_PRODUCTS[3],
         quantity: 1,
         selectedColor: 'Fluffy Oat',
       }
@@ -380,7 +384,9 @@ export const INITIAL_ORDERS: Order[] = [
   }
 ];
 
-export const INITIAL_CUSTOM_REQUESTS: CustomRequest[] = [
+export const INITIAL_ORDERS: Order[] = [];
+
+export const SAMPLE_DEMO_CUSTOM_REQUESTS: CustomRequest[] = [
   {
     id: 'REQ-301',
     customerName: 'Maya Johnson',
@@ -405,6 +411,8 @@ export const INITIAL_CUSTOM_REQUESTS: CustomRequest[] = [
     adminNote: 'Customer confirmed details via Instagram DM.',
   }
 ];
+
+export const INITIAL_CUSTOM_REQUESTS: CustomRequest[] = [];
 
 export const INSTAGRAM_POSTS = [
   {
